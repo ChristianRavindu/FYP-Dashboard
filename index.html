@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Threat Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Real-Time Threat Dashboard</h1>
+        <table id="threat-table">
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>Status</th>
+                    <th>Country</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for threat in threats %}
+                    <tr>
+                        <td>{{ threat.ip }}</td>
+                        <td>{{ threat.status }}</td>
+                        <td>{{ threat.country }}</td>
+                        <td>{{ threat.timestamp }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        var socket = io.connect('http://127.0.0.1:5000');
+
+        socket.on('new_threat', function(data) {
+            var threat = data.threat;
+            var table = document.getElementById("threat-table").getElementsByTagName('tbody')[0];
+            var newRow = table.insertRow(table.rows.length);
+            newRow.insertCell(0).innerHTML = threat.ip;
+            newRow.insertCell(1).innerHTML = threat.status;
+            newRow.insertCell(2).innerHTML = threat.country;
+            newRow.insertCell(3).innerHTML = threat.timestamp;
+        });
+    </script>
+
+</body>
+</html>
